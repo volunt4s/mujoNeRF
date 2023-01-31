@@ -104,13 +104,21 @@ class MujocoXML:
             if self.asset.find(pattern) is None:
                 self.asset.append(asset)
 
+    def merge_camera_set(self, camera_set_xml):
+        for camera in camera_set_xml:
+            self.worldbody.append(camera)
+
     def get_model(self, mode="mujoco"):
         """
         Returns a MjModel instance from the current xml tree.
         """
-        available_modes = ["mujoco"]
+        available_modes = ["dm_control", "mujoco"]
         xml_string = self.get_xml()
-        if mode == "mujoco":
+        if mode == "dm_control":
+            from dm_control import mujoco
+            model = mujoco.Physics.from_xml_string(xml_string)
+            return model
+        elif mode == "mujoco":
             import mujoco
             model = mujoco.MjModel.from_xml_string(xml_string)
             return model
