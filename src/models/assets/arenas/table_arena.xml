@@ -1,0 +1,41 @@
+<mujoco model="table_arena">
+  <asset>
+    <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256"/>
+    <!--texture builtin="checker" height="512" name="texplane" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2" type="2d" width="512"/ -->
+    <texture file="../textures/wood-tiles.png" type="2d" name="tex-light-wood"/>
+    <texture file="../textures/metal.png" type="2d" name="tex-dark-wood"/>
+    <texture file="../textures/wood-tiles.png" type="2d" name="texplane"/>
+    <material name="light-wood" reflectance="0.5" texrepeat="15 15" texture="tex-light-wood" texuniform="true"/>
+    <material name="metal" reflectance="0.5" texrepeat="5 5" texture="tex-dark-wood" texuniform="true"/>
+    <material name="floorplane" reflectance="0.0" texrepeat="1 1" texture="texplane" texuniform="true"/>
+  </asset>
+
+  <worldbody>
+    <geom condim="3" material="floorplane" name="floor" pos="0 0 0" size="3 3 .125" type="plane"/>
+    <body name="table" pos="0 0 0.8">
+      <geom pos="0 0 0" size="0.35 0.6 0.02" type="box" friction="1 0.005 0.0001" name="table_collision"/>
+      <geom pos="0 0 0" material="metal" size="0.35 0.6 0.02" type="box" conaffinity="0" contype="0" group="1" name="table_view"/>
+    </body>
+    <body name="table_legs" pos="0 0 0">
+      <geom pos="-0.26 0.38 0.4" size="0.03 0.4" type="cylinder" friction="1 0.005 0.0001" name="leg1_collision"/>
+      <geom pos="-0.26 0.38 0.4" material="metal" size="0.03 0.4" type="cylinder" conaffinity="0" contype="0" group="1" name="leg1"/>
+      <geom pos="0.26 0.38 0.4" size="0.03 0.4" type="cylinder" friction="1 0.005 0.0001" name="leg2_collision"/>
+      <geom pos="0.26 0.38 0.4" material="metal" size="0.03 0.4" type="cylinder" conaffinity="0" contype="0" group="1" name="leg2"/>
+      <geom pos="-0.26 -0.38 0.4" size="0.03 0.4" type="cylinder" friction="1 0.005 0.0001" name="leg3_collision"/>
+      <geom pos="-0.26 -0.38 0.4" material="metal" size="0.03 0.4" type="cylinder" conaffinity="0" contype="0" group="1" name="leg3"/>
+      <geom pos="0.26 -0.38 0.4" size="0.03 0.4" type="cylinder" friction="1 0.005 0.0001" name="leg4_collision"/>
+      <geom pos="0.26 -0.38 0.4" material="metal" size="0.03 0.4" type="cylinder" conaffinity="0" contype="0" group="1" name="leg4"/>
+    </body>
+    <light diffuse=".8 .8 .8" dir="0 -.15 -1" directional="false" pos="1 1 4.0" specular="0.3 0.3 0.3" castshadow="false"/>
+    <light diffuse=".8 .8 .8" dir="0 -.15 -1" directional="false" pos="-3. -3. 4.0" specular="0.3 0.3 0.3" castshadow="false"/>
+    <!-- front view -->
+    <camera mode="fixed" name="frontview" pos="1.6 0.15 1.45" quat="0.56 0.43 0.43 0.56"/>
+    <!-- bird view -->
+    <camera mode="fixed" name="birdview" pos="-0.2 0.15 3.0" quat="0.7071 0 0 0.7071"/>
+    <!-- agent view -->
+    <camera mode="fixed" name="agentview" pos="0.8 0.15 1.65" quat="0.653 0.271 0.271 0.653"/>
+    <!-- test view-->
+    <camera mode="fixed" name="testview" pos="0 0 5" quat="0.653 0.271 0.271 0.653"/>
+  </worldbody>
+  
+</mujoco>
