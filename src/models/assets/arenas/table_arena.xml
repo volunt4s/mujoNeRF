@@ -30,7 +30,6 @@
     <light diffuse=".8 .8 .8" dir="0 -.15 -1" directional="false" pos="-3. -3. 4.0" specular="0.3 0.3 0.3" castshadow="false"/>
 
     <!-- camera test -->
-        
   </worldbody>
   
 </mujoco>

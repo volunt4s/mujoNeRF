@@ -19,31 +19,29 @@ def main():
     can_object = CanObject(pos=[0, 0, 0.9])
     
     camera_set = CameraSet(ref_pos=np.array([1.500, 0.000, 1.500]), ref_xyaxes=np.array([0.000, 1.000, 0.000, -0.591, 0.005, 0.806]))
-    camera_set_xml = camera_set.get_rotated_camera_about_zaxis(2 * np.pi, 30)
+    camera_set_xml = camera_set.get_hemisphere_camera_samples([0, -np.pi/7], 6, [0, 2*np.pi], 24)
 
     world.merge(table_arena)
     world.merge(can_object)
     world.merge_camera_set(camera_set_xml)
-
-    print(world.get_xml())
-
+    
     model = world.get_model(mode="mujoco")
     physics = world.get_model(mode="dm_control")
     
+    camera_id_lst = []
+    for i in range(6):
+        for j in range(24):
+            camera_id_lst.append(str(i)+str(j))
+    
+    mj_camera_lst = []
+    for camera_id in camera_id_lst:
+        mj_camera = mujoco.Camera(physics, camera_id=camera_id)
+        mj_camera_lst.append(mj_camera)
 
-    viewer.launch(model)
+    cam1 = mj_camera_lst[94]
+
+    plt.imshow(cam1.render())
+    plt.show()
 
 if __name__ == "__main__":
     main()
-
-    # front
-    # <camera pos="1.500 0.000 1.500" xyaxes="0.000 1.000 0.000 -0.591 0.005 0.806"/>
-
-    # left side
-    # <camera pos="0.000 1.500 1.500" xyaxes="1.000 0.000 0.000 0.010 0.557 0.830"/>
-
-    # back
-    # <camera pos="-1.500 0.000 1.500" xyaxes="-0.020 -1.000 -0.000 0.548 -0.011 0.836"/>
-
-    # right side
-    # <camera pos="0.000 1.500 1.500" xyaxes="-1.000 0.011 -0.000 -0.006 -0.559 0.829"/>
