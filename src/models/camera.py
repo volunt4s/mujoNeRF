@@ -1,12 +1,65 @@
 import numpy as np
 import xml.etree.ElementTree as ET
+import os
+import json
+import imageio
+from tqdm import tqdm
+from dm_control import mujoco
+from scipy.spatial.transform import Rotation as R
 
 class CameraSet:
-    def __init__(self, ref_pos, ref_xyaxes):
+    def __init__(self, ref_pos, ref_xyaxes, y_target_angle, y_times, z_target_angle, z_times):
         self.ref_pos = ref_pos
         self.ref_xyaxes = ref_xyaxes
+        self.camera_id_lst = []
+        self.camera_xml_lst = self.get_hemisphere_camera_xml(y_target_angle, y_times, z_target_angle, z_times)
 
-    def get_hemisphere_camera_samples(self, y_target_angle, y_times, z_target_angle, z_times):
+    def generate_nerf_data(self, physics, base_dir):
+        print("Generating image files and JSON data...")
+        json_object = []
+        json_dir = base_dir + "/data.json"
+        for camera_id in tqdm(self.camera_id_lst):
+            mj_camera = mujoco.Camera(physics, camera_id=camera_id)
+            # JSON format processing
+            rotation_matrix = mj_camera.matrices().rotation
+            translation = mj_camera.matrices().translation
+            focal_length = mj_camera.matrices().focal
+            quat, pos, focal = self.preprocess_camera_params(rotation_matrix, translation, focal_length)
+            json_object.append(self.get_json_element(camera_id, quat, pos, focal, base_dir))
+            # Image save
+            img = mj_camera.render()
+            img_dir = base_dir + "/img/" + str(camera_id) + ".png"
+            imageio.imwrite(img_dir, img)
+        # JSON save
+        with open(json_dir, "w") as f:
+            json.dump(json_object, f, indent=4)
+        print("Done")
+
+    def get_json_element(self, camera_id, quat, pos, focal, base_dir):
+        img_dir = base_dir + "/img/" + str(camera_id) + ".png"
+        json_elem = {
+            "camera_id" : camera_id,
+            "file_dir" : img_dir,
+            "data":{
+                "quaternion" : quat,
+                "position" : pos,
+                "focal_length" : focal
+            }
+        }
+        return json_elem
+
+    def preprocess_camera_params(self, rotation_matrix, translation, focal_length):
+        # Rotation processing
+        r = R.from_matrix(rotation_matrix[:3, :3])
+        quat = r.as_quat().tolist() # x, y, z, w
+        # Translation processing
+        pos = translation[:3, 3].tolist()
+        # Focal length processing
+        if abs(focal_length[0, 0]) == abs(focal_length[1, 1]):
+            focal = abs(focal_length[0, 0])
+        return quat, pos, focal
+
+    def get_hemisphere_camera_xml(self, y_target_angle, y_times, z_target_angle, z_times):
         xml_elem_lst = []
         y_roted_lst = self.get_rotated_camera_about_zyaxis(y_target_angle, y_times, self.ref_pos, self.ref_xyaxes, axis="y")
         
@@ -16,6 +69,7 @@ class CameraSet:
                 rot_name = str(i) + str(j)
                 roted_xml_elem = self.get_xml_element(mode="fixed", name=rot_name, pos=z_roted_pos, xyaxes=z_roted_xyaxes)
                 xml_elem_lst.append(roted_xml_elem)
+                self.camera_id_lst.append(rot_name)
         return xml_elem_lst
 
     def get_rotated_camera_about_zyaxis(self, target_angle, times, pos, xyaxes, axis):
@@ -54,3 +108,11 @@ class CameraSet:
         camera.attrib["pos"] = " ".join(map(str, pos))
         camera.attrib["xyaxes"] = " ".join(map(str, xyaxes))
         return camera
+
+    @property
+    def get_camera_id_lst(self):
+        return self.camera_id_lst
+    
+    @property
+    def get_camera_xml_lst(self):
+        return self.camera_xml_lst
