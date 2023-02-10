@@ -2,13 +2,12 @@ from src.models.world import MujocoWorldBase
 from src.models.arenas import TableArena
 from src.models.objects import CanObject
 from src.models.camera import CameraSet
-
 from dm_control import mujoco
 from mujoco import viewer
-
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+
 
 def main():
     world = MujocoWorldBase()
@@ -32,8 +31,7 @@ def main():
     model = world.get_model(mode="mujoco")
     physics = world.get_model(mode="dm_control")
     
-    base_dir = os.getcwd() + "/nerf_data"
-    camera_set.generate_nerf_data(physics, base_dir)
+    camera_set.generate_nerf_data(physics)
     # viewer.launch(model)
 
 if __name__ == "__main__":
