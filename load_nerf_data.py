@@ -29,6 +29,7 @@ def load_data():
         
     imgs = (np.array(imgs) / 255.).astype(np.float32)
     poses = np.array(poses).astype(np.float32)
+    
     H, W = imgs[0].shape[:2]
 
     #TODO : half resolution processing

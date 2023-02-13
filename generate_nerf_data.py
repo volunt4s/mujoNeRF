@@ -32,7 +32,7 @@ def main():
     physics = world.get_model(mode="dm_control")
     
     camera_set.generate_nerf_data(physics)
-    # viewer.launch(model)
+
 
 if __name__ == "__main__":
     main()

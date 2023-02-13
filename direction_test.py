@@ -6,7 +6,7 @@ if __name__ == "__main__":
     imgs, poses, [H, W, focal] = load_data()
     
     # TODO : 기존과 같은 효과 보려면 transpose후 곱해야한다. 이유 살펴보기
-    rot_vec = np.stack([np.sum([0, 0, -1] * pose[:3, :3].transpose(), axis=-1) for pose in poses])
+    rot_vec = np.stack([np.sum([0, 0, -1] * pose[:3, :3], axis=-1) for pose in poses])
     translation = poses[:, :3, -1]
 
     # 00 : <camera pos="1.500 0.000 1.500" xyaxes="-0.000 1.000 0.000 -0.591 -0.000 0.806"/>
