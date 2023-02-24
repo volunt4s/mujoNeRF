@@ -1,9 +1,10 @@
-from load_nerf_data import load_data
+from src.generate.load_nerf_data import load_custom_data
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 if __name__ == "__main__":
-    imgs, poses, [H, W, focal] = load_data()
+    imgs, poses, [H, W, focal], i_split = load_custom_data()
     
     # TODO : 기존과 같은 효과 보려면 transpose후 곱해야한다. 이유 살펴보기
     rot_vec = np.stack([np.sum([0, 0, -1] * pose[:3, :3], axis=-1) for pose in poses])

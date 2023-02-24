@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # poses : (400, 4, 4)
 # [H, W, focal] : [400, 400, 555.5555155968841]
 
-def load_data():
+def load_mujoco_data():
     base_dir = os.path.join(os.getcwd(), "nerf_data")
     json_dir = os.path.join(base_dir, "data.json")
 
@@ -32,6 +32,14 @@ def load_data():
     
     H, W = imgs[0].shape[:2]
 
+    # Shuffle dataset index
+    idx_lst = np.arange(imgs.shape[0])
+    np.random.shuffle(idx_lst)
+    train_idx = idx_lst[0:110]
+    test_idx = idx_lst[110:130]
+    val_idx = idx_lst[130:]
+
+    i_split = [train_idx, test_idx, val_idx]
     #TODO : half resolution processing
 
-    return imgs, poses, [H, W, focal]
+    return imgs, poses, [H, W, focal], i_split

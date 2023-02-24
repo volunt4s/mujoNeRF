@@ -1,0 +1,12 @@
+<mujoco>
+    <asset>
+        <mesh file="meshes/cat.stl" name="cat_mesh" scale="0.01 0.01 0.01"/>
+        <texture file="../textures/metal.png" name="tex-cat"/>
+        <material name="cat" reflectance="0.7" texrepeat="5 5" texture="tex-cat" texuniform="true"/>
+    </asset>
+    <worldbody>
+        <body name="visual">
+            <geom pos="0 0 0.0" quat="0.7071068 0 0 0.7071068" mesh="cat_mesh" type="mesh" solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" material="cat" group="0" condim="4"/>
+        </body>
+    </worldbody>
+</mujoco>

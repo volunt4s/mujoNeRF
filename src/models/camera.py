@@ -29,7 +29,7 @@ class CameraSet:
             # JSON format processing
             rotation_matrix = mj_camera.matrices().rotation.transpose()
             ################# check rot mat transpose training
-
+            
             translation = mj_camera.matrices().translation
             focal_length = mj_camera.matrices().focal
             transform_mat, focal = self.preprocess_camera_params(rotation_matrix, translation, focal_length)
