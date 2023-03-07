@@ -1,7 +1,11 @@
+import os
+import imageio
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+from tqdm import tqdm
+
 from src.nerf.model import NeRF, Embedder
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -65,7 +69,7 @@ def batchify_rays(rays_flat, chunk=1024*32, **kwargs):
 
 
 def render(H, W, K, chunk=1024*32, rays=None, c2w=None, ndc=True,
-                  near=0., far=1.,
+                  near=None, far=None,
                   use_viewdirs=False, c2w_staticcam=None,
                   **kwargs):
     
@@ -144,6 +148,8 @@ def create_nerf(args):
     start = 0
     basedir = args.basedir
     expname = args.expname
+
+
 
     render_kwargs_train = {
         'network_query_fn' : network_query_fn,
@@ -281,11 +287,41 @@ def render_rays(ray_batch,
         ret['acc0'] = acc_map_0
         ret['z_std'] = torch.std(z_samples, dim=-1, unbiased=False)  # [N_rays]
 
-    for k in ret:
-        if (torch.isnan(ret[k]).any() or torch.isinf(ret[k]).any()):
-            print(f"! [Numerical Error] {k} contains nan or inf.")
+    # for k in ret:
+    #     if (torch.isnan(ret[k]).any() or torch.isinf(ret[k]).any()):
+    #         print(f"! [Numerical Error] {k} contains nan or inf.")
 
     return ret
+
+
+def render_path(render_poses, hwf, K, chunk, render_kwargs, gt_imgs=None, savedir=None, render_factor=0):
+
+    H, W, focal = hwf
+
+    if render_factor!=0:
+        # Render downsampled for speed
+        H = H//render_factor
+        W = W//render_factor
+        focal = focal/render_factor
+
+    rgbs = []
+    disps = []
+
+    for i, c2w in enumerate(tqdm(render_poses)):
+        rgb, disp, acc, _ = render(H, W, K, chunk=chunk, c2w=c2w[:3,:4], **render_kwargs)
+        rgbs.append(rgb.cpu().numpy())
+        disps.append(disp.cpu().numpy())
+
+        if savedir is not None:
+            rgb8 = to8b(rgbs[-1])
+            filename = os.path.join(savedir, '{:03d}.png'.format(i))
+            imageio.imwrite(filename, rgb8)
+
+    rgbs = np.stack(rgbs, 0)
+    disps = np.stack(disps, 0)
+
+    return rgbs, disps
+
 
 # Ray helpers
 # Ray helpers

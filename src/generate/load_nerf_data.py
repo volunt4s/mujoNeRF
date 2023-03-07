@@ -43,14 +43,13 @@ def pose_zrot(angle, ref):
     c2w = torch.Tensor(rot(angle) @ ref)
     return c2w
 
-def load_mujoco_data(ref_pose_id):
+def load_mujoco_data(test_pose_id):
     base_dir = os.path.join(os.getcwd(), "nerf_data")
     json_dir = os.path.join(base_dir, "data.json")
 
     cam_ids = []
     imgs = []
     poses = []
-
 
     with open(json_dir, 'r') as f:
         meta = json.load(f)
@@ -59,7 +58,11 @@ def load_mujoco_data(ref_pose_id):
 
     for frame in meta["frames"]:
         fname = frame["file_dir"]
-        imgs.append(imageio.v3.imread(fname))
+        try:
+            imgs.append(imageio.v3.imread(fname))
+        except FileNotFoundError:
+            print("FileNotFoundError: Please generate NeRF data first.")
+            exit(0)
         cam_ids.append(frame["camera_id"])
         poses.append(frame["transform_matrix"])
 
@@ -67,8 +70,8 @@ def load_mujoco_data(ref_pose_id):
     poses = np.array(poses).astype(np.float32)
     
     # Get reference render pose
-    ref_pose_idx = cam_ids.index(ref_pose_id)    
-    ref_pose = poses[ref_pose_idx]
+    test_pose_idx = cam_ids.index(test_pose_id)    
+    test_pose = poses[test_pose_idx]
 
     H, W = imgs[0].shape[:2]
 
@@ -80,7 +83,7 @@ def load_mujoco_data(ref_pose_id):
     test_idx = idx_lst[img_cnt-30:img_cnt-10]
     val_idx = idx_lst[img_cnt-10:]
 
-    render_poses = torch.stack([pose_zrot(angle, ref_pose) for angle in np.linspace(0.0, 2*np.pi, 40)], 0)
+    render_poses = torch.stack([pose_zrot(angle, test_pose) for angle in np.linspace(0.0, 2*np.pi, 40)], 0)
     i_split = [train_idx, test_idx, val_idx]
 
     return imgs, poses, render_poses, [H, W, focal], i_split

@@ -129,4 +129,5 @@ dmypy.json
 .pyre/
 
 # Ignore generated nerf images
-[nerf_data/]
+nerf_data/
+trained/
