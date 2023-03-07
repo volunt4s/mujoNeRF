@@ -20,16 +20,14 @@ class CameraSet:
         json_frames = []
         json_dir = os.path.join(base_dir, "data.json")
         img_dir = os.path.join(base_dir, "img/")
+        
         # Generate proper directory
-        if not os.path.exists(img_dir):
-            os.makedirs(img_dir)
+        os.makedirs(img_dir, exist_ok=True)
 
         for camera_id in tqdm(self.camera_id_lst):
             mj_camera = mujoco.Camera(physics, camera_id=camera_id)
             # JSON format processing
-            rotation_matrix = mj_camera.matrices().rotation.transpose()
-            ################# check rot mat transpose training
-            
+            rotation_matrix = mj_camera.matrices().rotation.transpose()            
             translation = mj_camera.matrices().translation
             focal_length = mj_camera.matrices().focal
             transform_mat, focal = self.preprocess_camera_params(rotation_matrix, translation, focal_length)
@@ -64,9 +62,11 @@ class CameraSet:
         transform_mat[:3, -1] = translation[:3, -1] * -1
         transform_mat[3, 3] = 1.0
         transform_mat = transform_mat.tolist()
+
         # Focal length processing
         if abs(focal_length[0, 0]) == abs(focal_length[1, 1]):
             focal = abs(focal_length[0, 0])
+
         return transform_mat, focal
 
     def get_hemisphere_camera_xml(self, y_target_angle, y_times, z_target_angle, z_times):
@@ -75,11 +75,13 @@ class CameraSet:
         
         for i, [y_roted_pos, y_roted_xyaxes] in enumerate(y_roted_lst):
             z_roted_lst = self.get_rotated_camera_about_zyaxis(z_target_angle, z_times, y_roted_pos, y_roted_xyaxes, axis="z")
+
             for j, [z_roted_pos, z_roted_xyaxes] in enumerate(z_roted_lst):
                 rot_name = str(i) + str(j)
                 roted_xml_elem = self.get_xml_element(mode="fixed", name=rot_name, pos=z_roted_pos, xyaxes=z_roted_xyaxes)
                 xml_elem_lst.append(roted_xml_elem)
                 self.camera_id_lst.append(rot_name)
+        
         return xml_elem_lst
 
     def get_rotated_camera_about_zyaxis(self, target_angle, times, pos, xyaxes, axis):
@@ -117,6 +119,7 @@ class CameraSet:
         camera.attrib["name"] = name
         camera.attrib["pos"] = " ".join(map(str, pos))
         camera.attrib["xyaxes"] = " ".join(map(str, xyaxes))
+        
         return camera
 
     @property

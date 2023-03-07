@@ -1,13 +1,10 @@
+import numpy as np
+from mujoco import viewer
+
 from src.models.world import MujocoWorldBase
 from src.models.arenas import EmptyArena
 from src.models.objects import CatObject
-
 from src.models.camera import CameraSet
-from dm_control import mujoco
-from mujoco import viewer
-import matplotlib.pyplot as plt
-import numpy as np
-import os
 
 
 def main():
@@ -32,7 +29,10 @@ def main():
     model = world.get_model(mode="mujoco")
     physics = world.get_model(mode="dm_control")
     
+    # First, get proper reference camera pose in Mujoco gui viewer 
     # viewer.launch(model)
+    
+    # Then, generate image data
     camera_set.generate_nerf_data(physics)
 
 
