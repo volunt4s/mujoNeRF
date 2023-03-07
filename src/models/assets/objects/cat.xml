@@ -1,7 +1,7 @@
 <mujoco>
     <asset>
         <mesh file="meshes/cat.stl" name="cat_mesh" scale="0.01 0.01 0.01"/>
-        <texture file="../textures/metal.png" name="tex-cat"/>
+        <texture file="../textures/wood0.png" name="tex-cat"/>
         <material name="cat" reflectance="0.7" texrepeat="5 5" texture="tex-cat" texuniform="true"/>
     </asset>
     <worldbody>

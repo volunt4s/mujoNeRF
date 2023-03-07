@@ -1,0 +1,11 @@
+<mujoco>
+    <asset>
+        <mesh file="meshes/lego.stl" name="lego_mesh" scale="0.01 0.01 0.01"/>
+        <material name="lego" reflectance="0.7"/>
+    </asset>
+    <worldbody>
+        <body name="visual">
+            <geom pos="0.3 0.0 0.0" quat="0 0 0.7071068 0.7071068" mesh="lego_mesh" type="mesh" rgba="1 0.75 0.35 1" material="lego"/>
+        </body>
+    </worldbody>
+</mujoco>

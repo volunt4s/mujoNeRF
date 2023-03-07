@@ -43,7 +43,8 @@ def pose_zrot(angle, ref):
     c2w = torch.Tensor(rot(angle) @ ref)
     return c2w
 
-def load_mujoco_data(test_pose_id):
+
+def load_mujoco_data(video_ref_id):
     base_dir = os.path.join(os.getcwd(), "nerf_data")
     json_dir = os.path.join(base_dir, "data.json")
 
@@ -70,8 +71,8 @@ def load_mujoco_data(test_pose_id):
     poses = np.array(poses).astype(np.float32)
     
     # Get reference render pose
-    test_pose_idx = cam_ids.index(test_pose_id)    
-    test_pose = poses[test_pose_idx]
+    video_ref_idx = cam_ids.index(video_ref_id)    
+    video_ref_pose = poses[video_ref_idx]
 
     H, W = imgs[0].shape[:2]
 
@@ -83,7 +84,7 @@ def load_mujoco_data(test_pose_id):
     test_idx = idx_lst[img_cnt-30:img_cnt-10]
     val_idx = idx_lst[img_cnt-10:]
 
-    render_poses = torch.stack([pose_zrot(angle, test_pose) for angle in np.linspace(0.0, 2*np.pi, 40)], 0)
+    render_poses = torch.stack([pose_zrot(angle, video_ref_pose) for angle in np.linspace(0.0, 2*np.pi, 40)], 0)
     i_split = [train_idx, test_idx, val_idx]
 
     return imgs, poses, render_poses, [H, W, focal], i_split

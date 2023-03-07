@@ -16,7 +16,7 @@ def save_video():
     parser = config_parser()
     args = parser.parse_args()
 
-    images, poses, render_poses, hwf, i_split = load_mujoco_data(test_pose_id="20")
+    images, poses, render_poses, hwf, i_split = load_mujoco_data(video_ref_id="20")
     H, W, focal = hwf
     K = np.array([
         [focal, 0, 0.5*W],
@@ -26,8 +26,8 @@ def save_video():
 
     _, render_kwargs_test, _, _, _ = hp.create_nerf(args)
     bds_dict = {
-        'near' : 1.0,
-        'far' : 6.0,
+        'near' : args.near,
+        'far' : args.far,
     }
     render_kwargs_test.update(bds_dict)
 

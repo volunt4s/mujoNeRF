@@ -14,6 +14,8 @@ warnings.filterwarnings("ignore")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 np.random.seed(0)
 
+# TODO: logs 수정, parser argument 수정, 막혀진벽, stl 파일, 리드미
+
 
 def train():
     parser = config_parser()
@@ -21,7 +23,7 @@ def train():
 
     # Load data
     K = None
-    images, poses, render_poses, hwf, i_split = load_mujoco_data(ref_pose_id="20")
+    images, poses, render_poses, hwf, i_split = load_mujoco_data(video_ref_id=args.video_ref_id)
     print('Loaded mujoco custom ', images.shape, render_poses.shape, hwf)
     i_train, i_test, i_val = i_split
 
@@ -58,14 +60,15 @@ def train():
         f = os.path.join(basedir, expname, 'config.txt')
         with open(f, 'w') as file:
             file.write(open(args.config, 'r').read())
-
+    print("Args, config saved at : ", os.path.join(basedir, expname))
+    
     # Create nerf model
     render_kwargs_train, render_kwargs_test, start, grad_vars, optimizer = hp.create_nerf(args)
     global_step = start
 
     bds_dict = {
-        'near' : near,
-        'far' : far,
+        'near' : args.near,
+        'far' : args.far,
     }
 
     render_kwargs_train.update(bds_dict)
