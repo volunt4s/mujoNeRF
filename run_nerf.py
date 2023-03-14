@@ -147,7 +147,7 @@ def train():
         # Save testset
         if i%args.i_testset == 0 and i > 0:
             torch.cuda.empty_cache()
-            print("Save testset")
+            print("\nSave testset")
             testsavedir = os.path.join(basedir, expname, f"testset_{i}")
             os.makedirs(testsavedir, exist_ok=True)
             with torch.no_grad():
@@ -155,14 +155,13 @@ def train():
         global_step += 1
 
     print("Save trained model")
-    trained_path = os.path.join(basedir, expname)
 
     torch.save({
         'global_step' : global_step,
         'network_fn_state_dict' : render_kwargs_train['network_fn'].state_dict(),
         'network_fine_state_dict' : render_kwargs_train['network_fine'].state_dict(),
         'optimizer_state_dict' : optimizer.state_dict()
-    }, os.path.join(trained_path, "trained_model.tar"))
+    }, os.path.join(os.path.join(basedir, expname), "trained_model.tar"))
 
     print("Done")
 

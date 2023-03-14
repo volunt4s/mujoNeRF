@@ -1,0 +1,8 @@
+torch==1.11.0
+mujoco
+dm_control
+imageio
+imageio-ffmpeg
+matplotlib
+configargparse
+tqdm

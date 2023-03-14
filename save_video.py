@@ -55,6 +55,7 @@ def save_video():
 
 
 if __name__ == "__main__":
+    # Set all tensor to cuda if using GPU
     if device != "cpu":
         torch.set_default_tensor_type('torch.cuda.FloatTensor')
     save_video()
