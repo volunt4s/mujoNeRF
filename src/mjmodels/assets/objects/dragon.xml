@@ -1,0 +1,15 @@
+<mujoco>
+    <default>
+        <mesh scale="0.02 0.02 0.02"/>
+    </default>
+    <asset>
+        <mesh file="meshes/dragon.stl" name="dragon_mesh"/>
+        <texture file="../textures/dark.png" name="tex-dragon"/>
+        <material name="dragon" reflectance="0.7" texrepeat="1 1" texture="tex-dragon" texuniform="false"/>
+    </asset>
+    <worldbody>
+        <body name="visual">
+            <geom pos="0 0 0.0" quat="0.7071068 0 0 0.7071068" mesh="dragon_mesh" type="mesh" material="dragon"/>
+        </body>
+    </worldbody>
+</mujoco>

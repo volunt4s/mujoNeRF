@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import time
 import warnings
 import torch
 from tqdm import tqdm, trange
@@ -11,10 +10,9 @@ from src.nerf.load_nerf_data import load_mujoco_data
 
 # Avoid pytorch meshgrid warning
 warnings.filterwarnings("ignore")
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 np.random.seed(0)
-
-# TODO: logs 수정, parser argument 수정, 막혀진벽, stl 파일, 리드미
 
 
 def train():
@@ -26,10 +24,6 @@ def train():
     images, poses, render_poses, hwf, i_split = load_mujoco_data(video_ref_id=args.video_ref_id)
     print('Loaded mujoco custom ', images.shape, render_poses.shape, hwf)
     i_train, i_test, i_val = i_split
-
-    # Ray bound
-    near = 1.0
-    far = 6.0
 
     # Cast intrinsics to right types
     H, W, focal = hwf
@@ -81,15 +75,13 @@ def train():
     N_rand = args.N_rand
     N_iters = 10000
     print('Begin')
-    print('TRAIN views are', i_train)
-    print('TEST views are', i_test)
-    print('VAL views are', i_val)
+    print(f'TRAIN views are {i_train} -> {len(i_train)} samples')
+    print(f'TEST views are {i_test} -> {len(i_test)} samples')
+    print(f'VAL views are {i_test} -> {len(i_val)} samples')
     
     start = start + 1
 
     for i in trange(start, N_iters):
-        time0 = time.time()
-
         # Random from one image
         img_i = np.random.choice(i_train)
         target = images[img_i]
@@ -148,25 +140,34 @@ def train():
         for param_group in optimizer.param_groups:
             param_group['lr'] = new_lrate
 
-        if i%args.i_print==0:
+        # Logging
+        if i%args.i_print == 0:
             tqdm.write(f"[TRAIN] Iter: {i} Loss: {loss.item()}  PSNR: {psnr.item()}")
 
+        # Save testset
+        if i%args.i_testset == 0 and i > 0:
+            torch.cuda.empty_cache()
+            print("Save testset")
+            testsavedir = os.path.join(basedir, expname, f"testset_{i}")
+            os.makedirs(testsavedir, exist_ok=True)
+            with torch.no_grad():
+                hp.render_path(torch.Tensor(poses[i_test]).to(device), hwf, K, args.chunk, render_kwargs_test, savedir=testsavedir)
         global_step += 1
 
     print("Save trained model")
-    trained_path = os.path.join(os.getcwd(), "trained")
-    os.makedirs(trained_path, exist_ok=True)
+    trained_path = os.path.join(basedir, expname)
 
     torch.save({
         'global_step' : global_step,
         'network_fn_state_dict' : render_kwargs_train['network_fn'].state_dict(),
         'network_fine_state_dict' : render_kwargs_train['network_fine'].state_dict(),
         'optimizer_state_dict' : optimizer.state_dict()
-    }, os.path.join(trained_path, "model.tar"))
+    }, os.path.join(trained_path, "trained_model.tar"))
 
     print("Done")
 
 if __name__=='__main__':
-    # Set all tensor to cuda
-    torch.set_default_tensor_type('torch.cuda.FloatTensor')
+    # Set all tensor to cuda if using GPU
+    if device != "cpu":
+        torch.set_default_tensor_type('torch.cuda.FloatTensor')
     train()

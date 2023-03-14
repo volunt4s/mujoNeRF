@@ -5,7 +5,7 @@ import os
 sim_path = os.path.abspath(os.path.dirname(__file__)+"/../" )
 import numpy as np
 
-import src.models
+import src.mjmodels
 
 RED = [1, 0, 0, 1]
 GREEN = [0, 1, 0, 1]
@@ -22,7 +22,7 @@ def xml_path_completion(xml_path):
     if xml_path.startswith("/"):
         full_path = xml_path
     else:
-        full_path = os.path.join(src.models.assets_root, xml_path)
+        full_path = os.path.join(src.mjmodels.assets_root, xml_path)
     return full_path
 
 

@@ -1,9 +1,0 @@
-expname = cat
-use_viewdirs = True
-lrate_decay = 500
-N_samples = 64
-N_importance = 128
-N_rand = 1024
-near = 1.0
-far = 5.0
-video_ref_id = 24

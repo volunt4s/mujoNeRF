@@ -11,6 +11,8 @@ from src.nerf.config_parse import config_parser
 # To avoid pytorch meshgrid warning
 warnings.filterwarnings("ignore")
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 def save_video():
     parser = config_parser()
@@ -31,17 +33,19 @@ def save_video():
     }
     render_kwargs_test.update(bds_dict)
 
-    trained_path = os.path.join(os.getcwd(), "trained")
-    ckpt = torch.load(os.path.join(trained_path, "model.tar"))
+    # Create rendered image save directory
+    basedir = args.basedir
+    expname = args.expname
+    save_dir = os.path.join(basedir, expname, "rendered")
+    os.makedirs(save_dir, exist_ok=True)
 
+    print("Load trained state dict")
+    ckpt = torch.load(os.path.join(basedir, expname, "trained_model.tar"))
     render_kwargs_test['network_fn'].load_state_dict(ckpt['network_fn_state_dict'])
     if render_kwargs_test['network_fine'] is not None:
         render_kwargs_test['network_fine'].load_state_dict(ckpt['network_fine_state_dict'])
 
-    print('Trained state dict loaded. Save video')
-    save_dir = os.path.join(trained_path, "img")
-    os.makedirs(save_dir, exist_ok=True)
-
+    print("Start")
     with torch.no_grad():
         rgbs, disps = hp.render_path(render_poses, hwf, K, args.chunk, render_kwargs_test, savedir=save_dir)
         imageio.mimwrite(os.path.join(save_dir, 'rgb_video.mp4'), hp.to8b(rgbs), fps=30, quality=8)
@@ -51,5 +55,6 @@ def save_video():
 
 
 if __name__ == "__main__":
-    torch.set_default_tensor_type('torch.cuda.FloatTensor')
+    if device != "cpu":
+        torch.set_default_tensor_type('torch.cuda.FloatTensor')
     save_video()

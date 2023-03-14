@@ -131,3 +131,4 @@ dmypy.json
 # Ignore generated nerf images
 nerf_data/
 trained/
+logs/
