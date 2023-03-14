@@ -1,4 +1,5 @@
 # mujoNeRF
+
 ![](imgs/cat_rgb.gif)
 
 Pytorch implementation of Neural Radiance Field using MuJoCo environment generated dataset
@@ -9,8 +10,6 @@ MuJoCo environment is based on [robosuite](https://robosuite.ai/), and NeRF code
 
 ## Installation
 
----
-
 ```
 $ git clone https://github.com/volunt4s/mujoNeRF
 $ cd mujoNeRF
@@ -19,7 +18,6 @@ $ pip install -r requirements.txt
 
 ## Dependencies
 
----
 
 - Pytorch 1.4
 - mujoco (≥ 2.0)
@@ -32,7 +30,6 @@ $ pip install -r requirements.txt
 
 ## How to run?
 
----
 
 To optimize mujoNeRF, you need to follow several steps
 
@@ -94,7 +91,7 @@ Training procedure animation below
 
 
 ## Custom objects
----
+
 Since mujoNeRF add objects using mjcf files, you can add your custom object mesh files. Place object mesh file(.stl), mjcf file, textures according to the following directory structure and modify `objects/xml_objects.py`
 
 ```                                                                                        
@@ -107,8 +104,6 @@ Since mujoNeRF add objects using mjcf files, you can add your custom object mesh
 ```
 
 ## Results
-
----
 
 ### Cat
 <table border="0">
