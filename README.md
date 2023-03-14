@@ -77,6 +77,10 @@ To train NeRF, run the code below.
 $ python run_nerf --config config.txt
 ```
 
+Training procedure animation below
+
+![](imgs/train.gif)
+
 Training takes about 10 minutes using single RTX 3080 GPU.
 
 After training, the trained model is stored at `logs/{expname}/`
@@ -90,10 +94,6 @@ Videos will be save at `logs/{expname}/rendered/`
 ```
 $ python save_video.py --config config.txt
 ```
-Training procedure animation below
-
-![](imgs/train.gif)
-
 
 ## Custom objects
 
