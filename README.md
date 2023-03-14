@@ -19,7 +19,7 @@ $ pip install -r requirements.txt
 ## Dependencies
 
 
-- Pytorch 1.4
+- Pytorch 1.11 (capable with CUDA 11.3)
 - mujoco (≥ 2.0)
 - dm_control
 - numpy
