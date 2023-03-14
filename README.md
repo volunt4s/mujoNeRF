@@ -44,7 +44,7 @@ $ python generate_nerf_data.py --run_gui True
 
 - Since mujoNeRF generates camera samples with z(azimuth), y(elevation)-axis transforms to satisfy spherical poses, it is recommended to select the lower part of the object as a reference camera. See example image below
 
-![output](imgs/mujoco1.png)
+![output](imgs/mujoco1.jpg)
 
 (Optional) To check generated camera pose in gui, run the code below
 
@@ -52,7 +52,7 @@ $ python generate_nerf_data.py --run_gui True
 $ python generate_nerf_data.py --run_gui True --cam_xml '{copied camera xml here}'
 ```
 
-![output](imgs/mujoco2.png)
+![output](imgs/mujoco2.jpg)
 
 Once you have obtained the reference camera pose, run the code below to create the image dataset and transform.json file.
 
