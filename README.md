@@ -35,7 +35,9 @@ To optimize mujoNeRF, you need to follow several steps
 
 ### 1. Generate MuJoCo based dataset
 
-Firstly, run MuJoCo gui and get camera reference pose corresponding to the one side of the object using Rendering → ‘Copy camera’ button in gui
+Firstly, run MuJoCo gui and get camera reference pose corresponding to the one side of the object using Rendering → ‘Copy camera’ button in gui.
+
+If you copied proper camera pose to clipboard, exit gui and follow next step
 
 
 ```
@@ -46,11 +48,14 @@ $ python generate_nerf_data.py --run_gui True
 
 ![output](imgs/mujoco1.jpg)
 
+
 (Optional) To check generated camera pose in gui, run the code below
 
 ```
 $ python generate_nerf_data.py --run_gui True --cam_xml '{copied camera xml here}'
 ```
+
+Example image is in below
 
 ![output](imgs/mujoco2.jpg)
 
